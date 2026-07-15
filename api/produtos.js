@@ -76,7 +76,8 @@ if(req.method==="POST"){
 const {
 produto,
 quantidade,
-preco
+preco,
+sku
 }=req.body;
 
 
@@ -84,10 +85,10 @@ preco
 const resultado = await sql`
 
 INSERT INTO products
-(produto, quantidade, preco)
+(produto, quantidade, preco, sku)
 
 VALUES
-(${produto}, ${quantidade}, ${preco})
+(${produto}, ${quantidade}, ${preco}, ${sku})
 
 RETURNING *
 

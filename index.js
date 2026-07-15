@@ -30,6 +30,9 @@ async function adicionar(){
     let preco=parseFloat(
         document.getElementById("preco").value
     );
+    let sku=parseFloat(
+        document.getElementById("sku").value
+    );
 
     if(produto==="" || isNaN(quantidade) || isNaN(preco)){
         alert("Preencha todos os campos.");
@@ -44,12 +47,14 @@ async function adicionar(){
         body:JSON.stringify({
             produto:produto,
             quantidade:quantidade,
-            preco:preco
+            preco:preco,
+            sku:sku
         })
     });
     document.getElementById("produto").value="";
     document.getElementById("quantidade").value="";
     document.getElementById("preco").value="";
+    document.getElementById("sku").value="";
     carregarProdutos();
 }
 // Remover produto
@@ -75,8 +80,8 @@ function mostrar(){
         <tr>
             <td>${item.produto}</td>
             <td>${item.quantidade}</td>
-            <td>€ ${Number(item.preco).toFixed(2)}</td>
-            <td>€ ${subtotal.toFixed(2)}</td>
+            <td>€ ${Number(item.preco)}</td>
+            <td>${item.sku}</td>
             <td>
                 <button class="remover" onclick="remover(${index})">Remover</button>
             </td>

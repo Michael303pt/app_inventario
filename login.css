@@ -1,46 +1,28 @@
 body{
-font-family:Arial;
-background:#f2f2f2;
+    font-family:Arial;
+    background:#f2f2f2;
 }
 
 .login{
-
-width:350px;
-
-margin:100px auto;
-
-background:white;
-
-padding:30px;
-
-border-radius:10px;
-
-box-shadow:0 0 10px #999;
-
+    width:350px;
+    margin:100px auto;
+    background:white;
+    padding:30px;
+    border-radius:10px;
+    box-shadow:0 0 10px #999;
 }
 
 input{
-
-width:100%;
-
-padding:12px;
-
-margin:10px 0;
-
+    width:100%;
+    padding:12px;
+    margin:10px 0;
 }
 
 button{
-
-width:100%;
-
-padding:12px;
-
-background:#007BFF;
-
-color:white;
-
-border:none;
-
-cursor:pointer;
-
+    width:100%;
+    padding:12px;
+    background:#007BFF;
+    color:white;
+    border:none;
+    cursor:pointer;
 }

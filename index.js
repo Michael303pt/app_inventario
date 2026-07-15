@@ -1,0 +1,95 @@
+// Verificar se existe login
+const token = localStorage.getItem("token");
+if(!token){
+    window.location="login.html";
+}
+// Carregar produtos
+let inventario=[];
+
+
+async function carregarProdutos(){
+    const resposta = await fetch("/api/produtos",{
+        headers:{
+            "Authorization":"Bearer "+token
+        }
+    });
+    if(resposta.status===401){
+        logout();
+        return;
+    }
+    inventario = await resposta.json();
+    mostrar();
+}
+// Adicionar produto
+async function adicionar(){
+    let produto=document.getElementById("produto").value;
+
+    let quantidade=parseInt(
+        document.getElementById("quantidade").value
+    );
+    let preco=parseFloat(
+        document.getElementById("preco").value
+    );
+
+    if(produto==="" || isNaN(quantidade) || isNaN(preco)){
+        alert("Preencha todos os campos.");
+        return;
+    }
+    await fetch("/api/produtos",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":"Bearer "+token
+            },
+        body:JSON.stringify({
+            produto:produto,
+            quantidade:quantidade,
+            preco:preco
+        })
+    });
+    document.getElementById("produto").value="";
+    document.getElementById("quantidade").value="";
+    document.getElementById("preco").value="";
+    carregarProdutos();
+}
+// Remover produto
+async function remover(index){
+    let id=inventario[index].id;
+    await fetch("/api/produtos/"+id,{
+        method:"DELETE",
+        headers:{
+            "Authorization":"Bearer "+token
+        }
+    });
+    carregarProdutos();
+}
+// Mostrar tabela
+function mostrar(){
+    let tabela=document.getElementById("tabela");
+    tabela.innerHTML="";
+    let total=0;
+    inventario.forEach((item,index)=>{
+        let subtotal=item.quantidade * Number(item.preco);
+        total += subtotal;
+        tabela.innerHTML += `
+        <tr>
+            <td>${item.produto}</td>
+            <td>${item.quantidade}</td>
+            <td>€ ${Number(item.preco).toFixed(2)}</td>
+            <td>€ ${subtotal.toFixed(2)}</td>
+            <td>
+                <button class="remover" onclick="remover(${index})">Remover</button>
+            </td>
+        </tr>
+        `;
+    });
+    document.getElementById("total").innerText =
+    total.toFixed(2);
+}
+// Logout
+function logout(){
+    localStorage.removeItem("token");
+    window.location="login.html";
+}
+// iniciar
+carregarProdutos();

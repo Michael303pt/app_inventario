@@ -88,8 +88,6 @@ function mostrar(){
         </tr>
         `;
     });
-    document.getElementById("total").innerText =
-    total.toFixed(2);
 }
 // Logout
 function logout(){

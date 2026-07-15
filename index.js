@@ -80,7 +80,7 @@ function mostrar(){
         <tr>
             <td>${item.produto}</td>
             <td>${item.quantidade}</td>
-            <td>€ ${Number(item.preco)}</td>
+            <td>${Number(item.preco)} € </td>
             <td>${item.sku}</td>
             <td>
                 <button class="remover" onclick="remover(${index})">Remover</button>

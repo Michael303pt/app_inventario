@@ -30,9 +30,8 @@ async function adicionar(){
     let preco=parseFloat(
         document.getElementById("preco").value
     );
-    let sku=parseFloat(
-        document.getElementById("sku").value
-    );
+    let sku=document.getElementById("sku").value
+    ;
 
     if(produto==="" || isNaN(quantidade) || isNaN(preco)){
         alert("Preencha todos os campos.");
@@ -42,7 +41,7 @@ async function adicionar(){
             method:"POST",
             headers:{
                 "Content-Type":"application/json",
-                "Authorization":"Bearer "+token
+                "Authorization":"Bearer "+ token
             },
         body:JSON.stringify({
             produto:produto,

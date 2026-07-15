@@ -9,7 +9,7 @@ async function login(){
         },
         body:JSON.stringify({email, password})
     });
-
+ 
     const dados=await resposta.json();
     if(resposta.ok){
         localStorage.setItem("token", dados.token);

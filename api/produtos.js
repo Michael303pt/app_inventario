@@ -30,7 +30,7 @@ export default async function handler(req,res){
     try{
         // LISTAR PRODUTOS
         if(req.method==="GET"){
-            const produtos = await sql`SELECT *FROM productsORDER BY id DESC`;
+            const produtos = await sql`SELECT * FROM products ORDER BY id DESC`;
             return res.json(produtos);
         }
         // ADICIONAR PRODUTO
@@ -44,7 +44,7 @@ export default async function handler(req,res){
             const resultado = await sql`
 
             INSERT INTO products (produto, quantidade, preco, sku)
-            VALUES(${produto}, ${quantidade}, ${preco}, ${sku})RETURNING *`;
+            VALUES (${produto}, ${quantidade}, ${preco}, ${sku}) RETURNING *`;
             return res.json(resultado[0]);
         }
         return res.status(405).json({
@@ -57,4 +57,4 @@ export default async function handler(req,res){
             erro:"Erro no servidor"
         });
     }
-}   
+}

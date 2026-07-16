@@ -17,7 +17,18 @@ async function carregarProdutos(){
         logout();
         return;
     }
-    inventario = await resposta.json();
+    if(!resposta.ok){
+        console.error("Erro ao carregar produtos:",resposta.status);
+        alert("Não foi possível carregar os produtos. Tenta novamente mais tarde.");
+        inventario=[];
+        mostrar();
+        return;
+    }
+    const dados = await resposta.json();
+    inventario = Array.isArray(dados) ? dados : [];
+    if(!Array.isArray(dados)){
+        console.error("Resposta inesperada da API:",dados);
+    }
     mostrar();
 }
 // Adicionar produto

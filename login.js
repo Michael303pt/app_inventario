@@ -11,10 +11,11 @@ async function login(){
     });
  
     const dados=await resposta.json();
-    if(resposta.ok){
-        localStorage.setItem("token", dados.token);
-        window.location="index.html";
-    }else{
-        alert(dados.erro);
-    }
+     if(resposta.ok){
+         localStorage.setItem("token", dados.token);
++        localStorage.setItem("nome", dados.nome);
+         window.location="index.html";
+     }else{
+         alert(dados.erro);
+     }
 }

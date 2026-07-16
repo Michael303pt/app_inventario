@@ -41,8 +41,7 @@ async function adicionar(){
     let preco=parseFloat(
         document.getElementById("preco").value
     );
-    let sku=document.getElementById("sku").value
-    ;
+    let sku=document.getElementById("sku").value;
 
     if(produto==="" || isNaN(quantidade) || isNaN(preco)){
         alert("Preencha todos os campos.");
@@ -171,6 +170,8 @@ document.addEventListener("DOMContentLoaded",function(){
         }
     });
 });
-
+function logs(){
+    window.location="logs.html";
+}
 // iniciar
 carregarProdutos();

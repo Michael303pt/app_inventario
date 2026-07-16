@@ -65,7 +65,7 @@ th{
     background:darkred;
 }
 
-.sair{
+.sair, .logs{
     background:#555;
     float:right;
 }

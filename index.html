@@ -32,5 +32,23 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="popup-overlay" id="popupOverlay">
+            <div class="popup">
+                <h2>Alterar Quantidade</h2>
+                <p class="popup-produto" id="popupProduto"></p>
+
+                <div class="popup-controls">
+                    <button class="popup-btn" onclick="alterarQuantidade(-1)">-</button>
+                    <input type="number" id="popupQuantidade" min="0">
+                    <button class="popup-btn" onclick="alterarQuantidade(1)">+</button>
+                </div>
+
+                <div class="popup-acoes">
+                    <button class="cancelar" onclick="fecharPopup()">Cancelar</button>
+                    <button onclick="guardarQuantidade()">Guardar</button>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

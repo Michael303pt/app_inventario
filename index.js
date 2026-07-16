@@ -38,11 +38,11 @@ async function adicionar(){
         return;
     }
     await fetch("/api/produtos",{
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json",
-                "Authorization":"Bearer "+ token
-            },
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json",
+            "Authorization":"Bearer "+ token
+        },
         body:JSON.stringify({
             produto:produto,
             quantidade:quantidade,
@@ -67,6 +67,58 @@ async function remover(index){
     });
     carregarProdutos();
 }
+
+// Popup para alterar quantidade
+let indiceEmEdicao=null;
+
+function change(index){
+    indiceEmEdicao=index;
+    let item=inventario[index];
+
+    document.getElementById("popupProduto").textContent=item.produto;
+    document.getElementById("popupQuantidade").value=item.quantidade;
+    document.getElementById("popupOverlay").classList.add("aberto");
+}
+
+function fecharPopup(){
+    document.getElementById("popupOverlay").classList.remove("aberto");
+    indiceEmEdicao=null;
+}
+
+function alterarQuantidade(delta){
+    let input=document.getElementById("popupQuantidade");
+    let valor=parseInt(input.value);
+    if(isNaN(valor)) valor=0;
+    valor+=delta;
+    if(valor<0) valor=0;
+    input.value=valor;
+}
+
+async function guardarQuantidade(){
+    if(indiceEmEdicao===null) return;
+
+    let novaQuantidade=parseInt(document.getElementById("popupQuantidade").value);
+    if(isNaN(novaQuantidade) || novaQuantidade<0){
+        alert("Introduz uma quantidade válida.");
+        return;
+    }
+
+    let id=inventario[indiceEmEdicao].id;
+    await fetch("/api/produtos/"+id,{
+        method:"PUT",
+        headers:{
+            "Content-Type":"application/json",
+            "Authorization":"Bearer "+token
+        },
+        body:JSON.stringify({
+            quantidade:novaQuantidade
+        })
+    });
+
+    fecharPopup();
+    carregarProdutos();
+}
+
 // Mostrar tabela
 function mostrar(){
     let tabela=document.getElementById("tabela");
@@ -83,6 +135,7 @@ function mostrar(){
             <td>${item.sku}</td>
             <td>
                 <button class="remover" onclick="remover(${index})">Remover</button>
+                <button class="change" onclick="change(${index})">Change</button>
             </td>
         </tr>
         `;
@@ -93,5 +146,18 @@ function logout(){
     localStorage.removeItem("token");
     window.location="login.html";
 }
+// Fechar popup ao clicar fora ou premir Esc
+document.getElementById("popupOverlay").addEventListener("click",function(e){
+    if(e.target===this){
+        fecharPopup();
+    }
+});
+
+document.addEventListener("keydown",function(e){
+    if(e.key==="Escape"){
+        fecharPopup();
+    }
+});
+
 // iniciar
 carregarProdutos();

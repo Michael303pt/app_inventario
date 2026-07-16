@@ -1,5 +1,7 @@
 import { sql } from "../../lib/db.js";
 import jwt from "jsonwebtoken";
+import { registarLog } from "../../lib/logs.js";
+
 
 function verificarToken(req) {
     const auth = req.headers.authorization;
@@ -24,10 +26,19 @@ export default async function handler(req, res) {
     }
 
     const { id } = req.query;
+
     try {
         // REMOVER PRODUTO
         if (req.method === "DELETE") {
-            await sql`DELETE FROM products WHERE id=${id}`;
+            const removido = await sql`DELETE FROM products WHERE id=${id} RETURNING sku`;
+
+            if (removido.length === 0) {
+                return res.status(404).json({
+                    erro: "Produto não encontrado"
+                });
+            }
+
+            await registarLog(utilizador.nome, "Removeu produto", removido[0].sku);
             return res.json({
                 ok: true
             });
@@ -55,6 +66,7 @@ export default async function handler(req, res) {
                 });
             }
 
+            await registarLog(utilizador.nome, "Alterou quantidade", resultado[0].sku);
             return res.json(resultado[0]);
         }
 

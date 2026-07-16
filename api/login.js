@@ -40,7 +40,8 @@ export default async function handler(req, res) {
             }
         );
         res.json({
-            token
+            token,
+            nome: utilizador[0].nome
         });
     }catch (erro){
         console.log(erro);

@@ -68,7 +68,17 @@ th{
 .sair, .logs{
     background:#555;
     float:right;
+    margin-left:10px;
 }
+
+.conta{
+   background:#6f42c1;
+}
+    
+.conta:hover{
+    background:#59339b;
+}
+    
 
 .change{
     background:#28a745;

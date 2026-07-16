@@ -1,127 +1,141 @@
 // Verificar se existe login
 const token = localStorage.getItem("token");
-if(!token){
-    window.location="login.html";
+const nome = localStorage.getItem("nome");
+if (!token) {
+    window.location = "login.html";
 }
 // Carregar produtos
-let inventario=[];
+let inventario = [];
 
 
-async function carregarProdutos(){
-    const resposta = await fetch("/api/produtos",{
-        headers:{
-            "Authorization":"Bearer "+token
+// Mostrar botão de conta apenas ao Admin
+document.addEventListener("DOMContentLoaded", function () {
+    if (nome === "Admin") {
+        document.getElementById("btnConta").style.display = "inline-block";
+    }
+});
+
+function irParaConta() {
+    window.location = "conta.html";
+}
+
+
+
+async function carregarProdutos() {
+    const resposta = await fetch("/api/produtos", {
+        headers: {
+            "Authorization": "Bearer " + token
         }
     });
-    if(resposta.status===401){
+    if (resposta.status === 401) {
         logout();
         return;
     }
-    if(!resposta.ok){
-        console.error("Erro ao carregar produtos:",resposta.status);
+    if (!resposta.ok) {
+        console.error("Erro ao carregar produtos:", resposta.status);
         alert("Não foi possível carregar os produtos. Tenta novamente mais tarde.");
-        inventario=[];
+        inventario = [];
         mostrar();
         return;
     }
     const dados = await resposta.json();
     inventario = Array.isArray(dados) ? dados : [];
-    if(!Array.isArray(dados)){
-        console.error("Resposta inesperada da API:",dados);
+    if (!Array.isArray(dados)) {
+        console.error("Resposta inesperada da API:", dados);
     }
     mostrar();
 }
 // Adicionar produto
-async function adicionar(){
-    let produto=document.getElementById("produto").value;
+async function adicionar() {
+    let produto = document.getElementById("produto").value;
 
-    let quantidade=parseInt(
+    let quantidade = parseInt(
         document.getElementById("quantidade").value
     );
-    let preco=parseFloat(
+    let preco = parseFloat(
         document.getElementById("preco").value
     );
-    let sku=document.getElementById("sku").value;
+    let sku = document.getElementById("sku").value;
 
-    if(produto==="" || isNaN(quantidade) || isNaN(preco)){
+    if (produto === "" || isNaN(quantidade) || isNaN(preco)) {
         alert("Preencha todos os campos.");
         return;
     }
-    await fetch("/api/produtos",{
-        method:"POST",
-        headers:{
-            "Content-Type":"application/json",
-            "Authorization":"Bearer "+ token
+    await fetch("/api/produtos", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
         },
-        body:JSON.stringify({
-            produto:produto,
-            quantidade:quantidade,
-            preco:preco,
-            sku:sku
+        body: JSON.stringify({
+            produto: produto,
+            quantidade: quantidade,
+            preco: preco,
+            sku: sku
         })
     });
-    document.getElementById("produto").value="";
-    document.getElementById("quantidade").value="";
-    document.getElementById("preco").value="";
-    document.getElementById("sku").value="";
+    document.getElementById("produto").value = "";
+    document.getElementById("quantidade").value = "";
+    document.getElementById("preco").value = "";
+    document.getElementById("sku").value = "";
     carregarProdutos();
 }
 // Remover produto
-async function remover(index){
-    let id=inventario[index].id;
-    await fetch("/api/produtos/"+id,{
-        method:"DELETE",
-        headers:{
-            "Authorization":"Bearer "+token
+async function remover(index) {
+    let id = inventario[index].id;
+    await fetch("/api/produtos/" + id, {
+        method: "DELETE",
+        headers: {
+            "Authorization": "Bearer " + token
         }
     });
     carregarProdutos();
 }
 
 // Popup para alterar quantidade
-let indiceEmEdicao=null;
+let indiceEmEdicao = null;
 
-function change(index){
-    indiceEmEdicao=index;
-    let item=inventario[index];
+function change(index) {
+    indiceEmEdicao = index;
+    let item = inventario[index];
 
-    document.getElementById("popupProduto").textContent=item.produto;
-    document.getElementById("popupQuantidade").value=item.quantidade;
+    document.getElementById("popupProduto").textContent = item.produto;
+    document.getElementById("popupQuantidade").value = item.quantidade;
     document.getElementById("popupOverlay").classList.add("aberto");
 }
 
-function fecharPopup(){
+function fecharPopup() {
     document.getElementById("popupOverlay").classList.remove("aberto");
-    indiceEmEdicao=null;
+    indiceEmEdicao = null;
 }
 
-function alterarQuantidade(delta){
-    let input=document.getElementById("popupQuantidade");
-    let valor=parseInt(input.value);
-    if(isNaN(valor)) valor=0;
-    valor+=delta;
-    if(valor<0) valor=0;
-    input.value=valor;
+function alterarQuantidade(delta) {
+    let input = document.getElementById("popupQuantidade");
+    let valor = parseInt(input.value);
+    if (isNaN(valor)) valor = 0;
+    valor += delta;
+    if (valor < 0) valor = 0;
+    input.value = valor;
 }
 
-async function guardarQuantidade(){
-    if(indiceEmEdicao===null) return;
+async function guardarQuantidade() {
+    if (indiceEmEdicao === null) return;
 
-    let novaQuantidade=parseInt(document.getElementById("popupQuantidade").value);
-    if(isNaN(novaQuantidade) || novaQuantidade<0){
+    let novaQuantidade = parseInt(document.getElementById("popupQuantidade").value);
+    if (isNaN(novaQuantidade) || novaQuantidade < 0) {
         alert("Introduz uma quantidade válida.");
         return;
     }
 
-    let id=inventario[indiceEmEdicao].id;
-    await fetch("/api/produtos/"+id,{
-        method:"PUT",
-        headers:{
-            "Content-Type":"application/json",
-            "Authorization":"Bearer "+token
+    let id = inventario[indiceEmEdicao].id;
+    await fetch("/api/produtos/" + id, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
         },
-        body:JSON.stringify({
-            quantidade:novaQuantidade
+        body: JSON.stringify({
+            quantidade: novaQuantidade
         })
     });
 
@@ -130,12 +144,12 @@ async function guardarQuantidade(){
 }
 
 // Mostrar tabela
-function mostrar(){
-    let tabela=document.getElementById("tabela");
-    tabela.innerHTML="";
-    let total=0;
-    inventario.forEach((item,index)=>{
-        let subtotal=item.quantidade * Number(item.preco);
+function mostrar() {
+    let tabela = document.getElementById("tabela");
+    tabela.innerHTML = "";
+    let total = 0;
+    inventario.forEach((item, index) => {
+        let subtotal = item.quantidade * Number(item.preco);
         total += subtotal;
         tabela.innerHTML += `
         <tr>
@@ -152,26 +166,27 @@ function mostrar(){
     });
 }
 // Logout
-function logout(){
+function logout() {
     localStorage.removeItem("token");
-    window.location="login.html";
+    localStorage.removeItem("nome");
+    window.location = "login.html";
 }
 // Fechar popup ao clicar fora ou premir Esc
-document.addEventListener("DOMContentLoaded",function(){
-    document.getElementById("popupOverlay").addEventListener("click",function(e){
-        if(e.target===this){
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("popupOverlay").addEventListener("click", function (e) {
+        if (e.target === this) {
             fecharPopup();
         }
     });
 
-    document.addEventListener("keydown",function(e){
-        if(e.key==="Escape"){
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
             fecharPopup();
         }
     });
 });
-function logs(){
-    window.location="logs.html";
+function logs() {
+    window.location = "logs.html";
 }
 // iniciar
 carregarProdutos();

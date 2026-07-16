@@ -46,6 +46,7 @@ function mostrar(logs){
     });
 }
 
+
 // Voltar ao inventário
 function voltar(){
     window.location="index.html";
@@ -54,6 +55,7 @@ function voltar(){
 // Logout
 function logout(){
     localStorage.removeItem("token");
+    localStorage.removeItem("nome");
     window.location="login.html";
 }
 

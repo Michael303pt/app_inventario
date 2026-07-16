@@ -1,5 +1,6 @@
 import { sql } from "../lib/db.js";
 import jwt from "jsonwebtoken";
+import { registarLog } from "../lib/logs.js";
 
 
 function verificarToken(req){
@@ -45,6 +46,7 @@ export default async function handler(req,res){
 
             INSERT INTO products (produto, quantidade, preco, sku)
             VALUES (${produto}, ${quantidade}, ${preco}, ${sku}) RETURNING *`;
+            await registarLog(utilizador.nome, "Adicionou produto", resultado[0].sku);
             return res.json(resultado[0]);
         }
         return res.status(405).json({

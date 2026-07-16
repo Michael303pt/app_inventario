@@ -161,5 +161,5 @@ document.addEventListener("DOMContentLoaded",function(){
     });
 });
 
-// iniciar
+// iniciar.
 carregarProdutos();

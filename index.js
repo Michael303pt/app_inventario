@@ -147,16 +147,18 @@ function logout(){
     window.location="login.html";
 }
 // Fechar popup ao clicar fora ou premir Esc
-document.getElementById("popupOverlay").addEventListener("click",function(e){
-    if(e.target===this){
-        fecharPopup();
-    }
-});
+document.addEventListener("DOMContentLoaded",function(){
+    document.getElementById("popupOverlay").addEventListener("click",function(e){
+        if(e.target===this){
+            fecharPopup();
+        }
+    });
 
-document.addEventListener("keydown",function(e){
-    if(e.key==="Escape"){
-        fecharPopup();
-    }
+    document.addEventListener("keydown",function(e){
+        if(e.key==="Escape"){
+            fecharPopup();
+        }
+    });
 });
 
 // iniciar

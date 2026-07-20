@@ -38,8 +38,8 @@ function mostrar(logs){
         tabela.innerHTML += `
         <tr>
             <td>${log.Nome}</td>
-            <td>${log.SKU}</td>
             <td>${log["Acao"]}</td>
+            <td>${log.SKU}</td>
             <td>${data}</td>
         </tr>
         `;

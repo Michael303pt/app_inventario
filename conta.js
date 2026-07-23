@@ -44,10 +44,9 @@ async function carregarUtilizadores(){
 // Criar utilizador
 async function criarUtilizador(){
     let nomeNovo=document.getElementById("nome").value;
-    let emailNovo=document.getElementById("email").value;
     let passwordNovo=document.getElementById("password").value;
 
-    if(nomeNovo==="" || emailNovo==="" || passwordNovo===""){
+    if(nomeNovo==="" || passwordNovo===""){
         alert("Preencha todos os campos.");
         return;
     }
@@ -60,7 +59,6 @@ async function criarUtilizador(){
         },
         body:JSON.stringify({
             nome:nomeNovo,
-            email:emailNovo,
             password:passwordNovo
         })
     });
@@ -72,20 +70,109 @@ async function criarUtilizador(){
     }
 
     document.getElementById("nome").value="";
-    document.getElementById("email").value="";
     document.getElementById("password").value="";
     carregarUtilizadores();
 }
 
 // Remover utilizador
-async function removerUtilizador(index){
-    let id=utilizadores[index].id;
-    await fetch("/api/utilizadores/"+id,{
+let indiceARemover=null;
+
+function abrirPopupRemover(index){
+    indiceARemover=index;
+    document.getElementById("popupRemoverNome").textContent=utilizadores[index].nome;
+    document.getElementById("removerAdminPassword").value="";
+    document.getElementById("popupRemoverOverlay").classList.add("aberto");
+}
+
+function fecharPopupRemover(){
+    document.getElementById("popupRemoverOverlay").classList.remove("aberto");
+    indiceARemover=null;
+}
+
+async function confirmarRemocao(){
+    if(indiceARemover===null) return;
+
+    let adminPassword=document.getElementById("removerAdminPassword").value;
+    if(adminPassword===""){
+        alert("Confirma a tua password de Admin.");
+        return;
+    }
+
+    let id=utilizadores[indiceARemover].id;
+    const resposta = await fetch("/api/utilizadores/"+id,{
         method:"DELETE",
         headers:{
+            "Content-Type":"application/json",
             "Authorization":"Bearer "+token
-        }
+        },
+        body:JSON.stringify({
+            adminPassword:adminPassword
+        })
     });
+
+    if(!resposta.ok){
+        const dados = await resposta.json().catch(()=>({}));
+        alert(dados.erro || "Não foi possível remover o utilizador.");
+        return;
+    }
+
+    fecharPopupRemover();
+    carregarUtilizadores();
+}
+
+// Editar utilizador
+let indiceEmEdicao=null;
+
+function abrirPopupEditar(index){
+    indiceEmEdicao=index;
+    document.getElementById("editNome").value=utilizadores[index].nome;
+    document.getElementById("editPassword").value="";
+    document.getElementById("editAdminPassword").value="";
+    document.getElementById("popupEditarOverlay").classList.add("aberto");
+}
+
+function fecharPopupEditar(){
+    document.getElementById("popupEditarOverlay").classList.remove("aberto");
+    indiceEmEdicao=null;
+}
+
+async function guardarEdicao(){
+    if(indiceEmEdicao===null) return;
+
+    let novoNome=document.getElementById("editNome").value;
+    let novaPassword=document.getElementById("editPassword").value;
+    let adminPassword=document.getElementById("editAdminPassword").value;
+
+    if(novoNome===""){
+        alert("O nome não pode ficar vazio.");
+        return;
+    }
+    if(adminPassword===""){
+        alert("Confirma a tua password de Admin.");
+        return;
+    }
+
+    let id=utilizadores[indiceEmEdicao].id;
+    const resposta = await fetch("/api/utilizadores/"+id,{
+        method:"PUT",
+        headers:{
+            "Content-Type":"application/json",
+            "Authorization":"Bearer "+token
+        },
+        body:JSON.stringify({
+            nome:novoNome,
+            password:novaPassword,
+            adminPassword:adminPassword
+        })
+    });
+
+    if(!resposta.ok){
+        const dados = await resposta.json().catch(()=>({}));
+        alert(dados.erro || "Não foi possível guardar as alterações.");
+        return;
+    }
+
+    fecharPopupEditar();
     carregarUtilizadores();
 }
 
@@ -97,14 +184,35 @@ function mostrarUtilizadores(){
         tabela.innerHTML += `
         <tr>
             <td>${item.nome}</td>
-            <td>${item.email}</td>
             <td>
-                <button class="remover" onclick="removerUtilizador(${index})">Remover</button>
+            <button class="change" onclick="abrirPopupEditar(${index})">Editar</button>
+            <button class="remover" onclick="abrirPopupRemover(${index})">Remover</button>
             </td>
         </tr>
         `;
     });
 }
+
+// Fechar popups ao clicar fora ou premir Esc
+document.addEventListener("DOMContentLoaded",function(){
+    document.getElementById("popupEditarOverlay").addEventListener("click",function(e){
+        if(e.target===this){
+            fecharPopupEditar();
+        }
+    });
+    document.getElementById("popupRemoverOverlay").addEventListener("click",function(e){
+        if(e.target===this){
+            fecharPopupRemover();
+        }
+    });
+ 
+    document.addEventListener("keydown",function(e){
+        if(e.key==="Escape"){
+            fecharPopupEditar();
+            fecharPopupRemover();
+        }
+    });
+});
 
 function voltar(){
     window.location="index.html";

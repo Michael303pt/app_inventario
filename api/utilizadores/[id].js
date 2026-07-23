@@ -18,6 +18,13 @@ function verificarToken(req){
     }
 }
 
+async function verificarPasswordAdmin(adminId, adminPassword){
+    if(!adminPassword) return false;
+    const admin = await sql`SELECT password FROM users WHERE id=${adminId}`;
+    if(admin.length === 0) return false;
+    return bcrypt.compare(adminPassword, admin[0].password);
+}
+
 export default async function handler(req,res){
     const utilizador = verificarToken(req);
     if(!utilizador){

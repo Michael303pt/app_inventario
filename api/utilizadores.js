@@ -35,18 +35,17 @@ export default async function handler(req,res){
     try{
         // LISTAR UTILIZADORES
         if(req.method==="GET"){
-            const utilizadores = await sql`SELECT id, nome, email FROM users ORDER BY id DESC`;
+            const utilizadores = await sql`SELECT id, nome FROM users ORDER BY id DESC`;
             return res.json(utilizadores);
         }
         // CRIAR UTILIZADOR
         if(req.method==="POST"){
             const {
                 nome,
-                email,
                 password
             }=req.body;
 
-            if(!nome || !email || !password){
+            if(!nome || !password){
                 return res.status(400).json({
                     erro:"Preenche todos os campos"
                 });
@@ -62,9 +61,9 @@ export default async function handler(req,res){
             const passwordEncriptada = await bcrypt.hash(password, 10);
 
             const resultado = await sql`
-            INSERT INTO users (nome, email, password)
-            VALUES (${nome}, ${email}, ${passwordEncriptada})
-            RETURNING id, nome, email`;
+            INSERT INTO users (nome, password)
++            VALUES (${nome}, ${passwordEncriptada})
++            RETURNING id, nome`;
             return res.json(resultado[0]);
         }
         return res.status(405).json({

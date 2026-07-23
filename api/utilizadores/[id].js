@@ -1,5 +1,6 @@
 import { sql } from "../../lib/db.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 function verificarToken(req){
     const auth = req.headers.authorization;
@@ -43,6 +44,16 @@ export default async function handler(req,res){
     try{
         // REMOVER UTILIZADOR
         if(req.method==="DELETE"){
+
+            const { adminPassword } = req.body;
+ 
+            const passwordAdminValida = await verificarPasswordAdmin(utilizador.id, adminPassword);
+            if(!passwordAdminValida){
+                return res.status(401).json({
+                    erro:"Password de Admin incorreta"
+                });
+            }
+
             if(Number(id) === utilizador.id){
                 return res.status(400).json({
                     erro:"Não podes remover a tua própria conta"
@@ -66,6 +77,58 @@ export default async function handler(req,res){
                 sucesso:true
             });
         }
+
+        // EDITAR UTILIZADOR (nome e/ou password)
+        if(req.method==="PUT"){
+            const { nome, password, adminPassword } = req.body;
+ 
+            const passwordAdminValida = await verificarPasswordAdmin(utilizador.id, adminPassword);
+            if(!passwordAdminValida){
+                return res.status(401).json({
+                    erro:"Password de Admin incorreta"
+                });
+            }
+ 
+            if(!nome){
+                return res.status(400).json({
+                    erro:"O nome é obrigatório"
+                });
+            }
+ 
+            const alvo = await sql`SELECT nome FROM users WHERE id=${id}`;
+            if(alvo.length === 0){
+                return res.status(404).json({
+                    erro:"Utilizador não encontrado"
+                });
+            }
+            if(alvo[0].nome === "Admin" && nome !== "Admin"){
+                return res.status(400).json({
+                    erro:"Não é possível alterar o nome da conta Admin"
+                });
+            }
+ 
+            if(nome !== alvo[0].nome){
+                const existente = await sql`SELECT id FROM users WHERE nome=${nome} AND id<>${id}`;
+                if(existente.length > 0){
+                    return res.status(409).json({
+                        erro:"Já existe um utilizador com esse nome"
+                    });
+                }
+            }
+ 
+            if(password){
+                const passwordEncriptada = await bcrypt.hash(password, 10);
+                await sql`UPDATE users SET nome=${nome}, password=${passwordEncriptada} WHERE id=${id}`;
+            }else{
+                await sql`UPDATE users SET nome=${nome} WHERE id=${id}`;
+            }
+ 
+            return res.json({
+                sucesso:true
+            });
+        }
+
+
         return res.status(405).json({
             erro:"Método inválido"
         });

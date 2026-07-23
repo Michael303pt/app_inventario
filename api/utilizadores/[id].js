@@ -117,7 +117,7 @@ export default async function handler(req,res){
             }
  
             if(password){
-                const passwordEncriptada = await bcrypt.hash(password, 10);
+                const passwordEncriptada = await bcrypt.hash(password, 12);
                 await sql`UPDATE users SET nome=${nome}, password=${passwordEncriptada} WHERE id=${id}`;
             }else{
                 await sql`UPDATE users SET nome=${nome} WHERE id=${id}`;

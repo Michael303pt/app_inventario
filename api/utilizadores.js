@@ -52,10 +52,10 @@ export default async function handler(req,res){
                 });
             }
 
-            const existente = await sql`SELECT id FROM users WHERE email=${email}`;
+            const existente = await sql`SELECT id FROM users WHERE nome=${nome}`;
             if(existente.length > 0){
                 return res.status(409).json({
-                    erro:"Já existe um utilizador com esse email"
+                    erro:"Já existe um utilizador com esse nome"
                 });
             }
 

@@ -10,9 +10,9 @@ export default async function handler(req, res) {
         });
     }
 
-    const { email, password } = req.body;
+    const { nome, password } = req.body;
     try {
-        const utilizador = await sql`SELECT * FROM users WHERE email=${email}`;
+        const utilizador = await sql`SELECT * FROM users WHERE nome=${nome}`;
 
         if (utilizador.length === 0) {
             return res.status(401).json({

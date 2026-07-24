@@ -62,8 +62,8 @@ export default async function handler(req,res){
 
             const resultado = await sql`
             INSERT INTO users (nome, password)
-+            VALUES (${nome}, ${passwordEncriptada})
-+            RETURNING id, nome`;
+            VALUES (${nome}, ${passwordEncriptada})
+            RETURNING id, nome`;
             return res.json(resultado[0]);
         }
         return res.status(405).json({

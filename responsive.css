@@ -39,6 +39,14 @@
         display:block;
     }
 
+    /* Caixa de login: deixa de ter largura fixa em ecrãs pequenos */
+    .login{
+        width:90%;
+        margin:50px auto;
+        padding:20px;
+        box-sizing:border-box;
+    }
+
     /* Tabela: em vez de espremer as colunas, deixa fazer scroll horizontal */
     .table-wrapper{
         overflow-x:auto;

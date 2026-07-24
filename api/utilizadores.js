@@ -35,36 +35,35 @@ export default async function handler(req,res){
     try{
         // LISTAR UTILIZADORES
         if(req.method==="GET"){
-            const utilizadores = await sql`SELECT id, nome, email FROM users ORDER BY id DESC`;
+            const utilizadores = await sql`SELECT id, nome FROM users ORDER BY id DESC`;
             return res.json(utilizadores);
         }
         // CRIAR UTILIZADOR
         if(req.method==="POST"){
             const {
                 nome,
-                email,
                 password
             }=req.body;
 
-            if(!nome || !email || !password){
+            if(!nome || !password){
                 return res.status(400).json({
                     erro:"Preenche todos os campos"
                 });
             }
 
-            const existente = await sql`SELECT id FROM users WHERE email=${email}`;
+            const existente = await sql`SELECT id FROM users WHERE nome=${nome}`;
             if(existente.length > 0){
                 return res.status(409).json({
-                    erro:"Já existe um utilizador com esse email"
+                    erro:"Já existe um utilizador com esse nome"
                 });
             }
 
             const passwordEncriptada = await bcrypt.hash(password, 10);
 
             const resultado = await sql`
-            INSERT INTO users (nome, email, password)
-            VALUES (${nome}, ${email}, ${passwordEncriptada})
-            RETURNING id, nome, email`;
+            INSERT INTO users (nome, password)
++            VALUES (${nome}, ${passwordEncriptada})
++            RETURNING id, nome`;
             return res.json(resultado[0]);
         }
         return res.status(405).json({

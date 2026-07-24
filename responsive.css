@@ -1,0 +1,56 @@
+/*
+    responsive.css
+    Regras partilhadas para telas pequenas (telemóveis/tablets).
+    Este ficheiro deve ser ligado em TODAS as páginas da aplicação,
+    depois do CSS específico de cada página, para poder sobrepor as
+    regras normais só quando o ecrã é pequeno.
+
+    Exemplo de uso no <head>:
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="responsive.css">
+*/
+
+@media (max-width: 600px){
+
+    body{
+        padding:10px;
+    }
+
+    .container{
+        padding:15px;
+        border-radius:6px;
+    }
+
+    h1{
+        font-size:20px;
+    }
+
+    /* Inputs e botões ocupam a largura toda, mais fáceis de tocar */
+    input, button{
+        width:100%;
+        box-sizing:border-box;
+        margin:5px 0;
+        font-size:16px; /* evita zoom automático em iOS ao focar inputs */
+    }
+
+    /* Botões que estavam "float" (sair, logs, voltar) passam a empilhar */
+    .sair, .logs, .voltar{
+        float:none;
+        display:block;
+    }
+
+    /* Tabela: em vez de espremer as colunas, deixa fazer scroll horizontal */
+    .table-wrapper{
+        overflow-x:auto;
+        -webkit-overflow-scrolling:touch;
+    }
+
+    table{
+        min-width:500px;
+    }
+
+    th, td{
+        padding:8px;
+        font-size:14px;
+    }
+}

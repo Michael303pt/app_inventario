@@ -1,37 +1,62 @@
 <!DOCTYPE html>
 <html lang="pt">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Informações da Conta</title>
-        <link rel="stylesheet" href="index.css">
-        <link rel="stylesheet" href="conta.css">
-        <script src="conta.js" defer></script>
-    </head>
 
-    <body>
-        <div class="container">
-            <button class="sair" onclick="voltar()">Voltar</button>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informações da Conta</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="conta.css">
+    <script src="conta.js" defer></script>
+</head>
 
-            <h1>Informações da Conta</h1>
+<body>
+    <div class="container">
+        <button class="sair" onclick="voltar()">Voltar</button>
 
-            <h2>Novo Utilizador</h2>
-            <input type="text" id="nome" placeholder="Nome">
-            <input type="text" id="email" placeholder="Email">
-            <input type="password" id="password" placeholder="Password">
-            <button onclick="criarUtilizador()">Criar Utilizador</button>
+        <h1>Informações de Utilizadores</h1>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Email</th>
-                        <th>Ação</th>
-                    </tr>
-                </thead>
-                <tbody id="tabelaUtilizadores">
-                </tbody>
-            </table>
+        <h2>Novo Utilizador</h2>
+        <input type="text" id="nome" placeholder="Nome">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="criarUtilizador()">Criar Utilizador</button>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaUtilizadores">
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="popup-overlay" id="popupEditarOverlay">
+        <div class="popup">
+            <h2>Editar Utilizador</h2>
+            <input type="text" id="editNome" placeholder="Nome">
+            <input type="password" id="editPassword" placeholder="Nova password (opcional)">
+            <input type="password" id="editAdminPassword" placeholder="Confirma a tua password de Admin">
+            <div class="popup-acoes">
+                <button class="cancelar" onclick="fecharPopupEditar()">Cancelar</button>
+                <button onclick="guardarEdicao()">Guardar</button>
+            </div>
         </div>
-    </body>
+    </div>
+
+    <div class="popup-overlay" id="popupRemoverOverlay">
+        <div class="popup">
+            <h2>Remover Utilizador</h2>
+            <p class="popup-produto" id="popupRemoverNome"></p>
+            <input type="password" id="removerAdminPassword" placeholder="Confirma a tua password de Admin">
+            <div class="popup-acoes">
+                <button class="cancelar" onclick="fecharPopupRemover()">Cancelar</button>
+                <button onclick="confirmarRemocao()">Remover</button>
+            </div>
+        </div>
+    </div>
+</body>
+
 </html>

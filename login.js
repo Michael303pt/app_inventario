@@ -1,13 +1,13 @@
 async function login(){
 
-    const email=document.getElementById("email").value;
+    const nome=document.getElementById("nome").value
     const password=document.getElementById("password").value;
     const resposta=await fetch("/api/login",{
         method:"POST",
         headers:{
             "Content-Type":"application/json"
         },
-        body:JSON.stringify({email, password})
+        body:JSON.stringify({nome, password})
     });
  
     const dados=await resposta.json();

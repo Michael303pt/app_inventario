@@ -2,6 +2,8 @@ import { sql } from "../lib/db.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
+// Valida o token JWT do cabeçalho Authorization.
+// Devolve { id, nome } do utilizador ou null se não for válido.
 function verificarToken(req){
     const auth = req.headers.authorization;
 
@@ -19,6 +21,9 @@ function verificarToken(req){
     }
 }
 
+// /api/utilizadores   (só o Admin pode usar)
+//   GET  -> lista os utilizadores
+//   POST -> cria um utilizador novo
 export default async function handler(req,res){
     const utilizador = verificarToken(req);
     if(!utilizador){
@@ -26,6 +31,8 @@ export default async function handler(req,res){
             erro:"Não autorizado"
         });
     }
+    // 401 = não estás autenticado, 403 = estás autenticado mas não tens permissão
+    // o "Admin" é identificado pelo nome que vem dentro do token
     if(utilizador.nome !== "Admin"){
         return res.status(403).json({
             erro:"Acesso restrito ao Admin"
@@ -34,6 +41,7 @@ export default async function handler(req,res){
 
     try{
         // LISTAR UTILIZADORES
+        // só pedimos id e nome, para a password (mesmo com hash) nunca sair da BD
         if(req.method==="GET"){
             const utilizadores = await sql`SELECT id, nome FROM users ORDER BY id DESC`;
             return res.json(utilizadores);
@@ -51,6 +59,7 @@ export default async function handler(req,res){
                 });
             }
 
+            // os nomes são usados para fazer login, por isso não podem repetir
             const existente = await sql`SELECT id FROM users WHERE nome=${nome}`;
             if(existente.length > 0){
                 return res.status(409).json({
@@ -58,6 +67,7 @@ export default async function handler(req,res){
                 });
             }
 
+            // nunca se guarda a password em texto, só o hash (10 = custo do bcrypt)
             const passwordEncriptada = await bcrypt.hash(password, 10);
 
             const resultado = await sql`

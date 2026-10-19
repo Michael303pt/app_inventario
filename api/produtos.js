@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import { registarLog } from "../lib/logs.js";
 
 
+// Valida o token JWT do cabeçalho Authorization.
+// Devolve { id, nome } do utilizador ou null se não for válido.
 function verificarToken(req){
     const auth = req.headers.authorization;
 
@@ -20,6 +22,10 @@ function verificarToken(req){
     }
 }
 
+// /api/produtos
+//   GET  -> lista todos os produtos
+//   POST -> adiciona um produto novo
+// Qualquer utilizador com login pode usar (não é preciso ser Admin).
 export default async function handler(req,res){
     const utilizador = verificarToken(req);
     if(!utilizador){
@@ -30,6 +36,7 @@ export default async function handler(req,res){
 
     try{
         // LISTAR PRODUTOS
+        // os mais recentes aparecem primeiro
         if(req.method==="GET"){
             const produtos = await sql`SELECT * FROM products ORDER BY id DESC`;
             return res.json(produtos);
@@ -42,6 +49,8 @@ export default async function handler(req,res){
                 preco,
                 sku
             }=req.body;
+            // nota: aqui não se valida nada, confia-se no que o frontend envia
+            // RETURNING * devolve a linha criada (já com o id gerado pela BD)
             const resultado = await sql`
 
             INSERT INTO products (produto, quantidade, preco, sku)
@@ -49,6 +58,7 @@ export default async function handler(req,res){
             await registarLog(utilizador.nome, "Adicionou produto", resultado[0].sku);
             return res.json(resultado[0]);
         }
+        // qualquer outro método (PUT, DELETE...) não é suportado nesta rota
         return res.status(405).json({
             erro:"Método inválido"
         });

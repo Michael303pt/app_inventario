@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import { registarLog } from "../../lib/logs.js";
 
 
+// Valida o token JWT do cabeçalho Authorization.
+// Devolve { id, nome } do utilizador ou null se não for válido.
 function verificarToken(req) {
     const auth = req.headers.authorization;
 
@@ -17,6 +19,10 @@ function verificarToken(req) {
     }
 }
 
+// /api/produtos/:id
+//   DELETE -> remove o produto
+//   PUT    -> atualiza só a quantidade
+// O :id vem do nome do ficheiro ([id].js), a Vercel põe-no em req.query.
 export default async function handler(req, res) {
     const utilizador = verificarToken(req);
     if (!utilizador) {
@@ -30,8 +36,10 @@ export default async function handler(req, res) {
     try {
         //remover produto
         if (req.method === "DELETE") {
+            // RETURNING sku serve para sabermos o que foi apagado e pôr isso no log
             const removido = await sql`DELETE FROM products WHERE id=${id} RETURNING sku`;
 
+            // se não voltou nenhuma linha é porque o id não existia
             if (removido.length === 0) {
                 return res.status(404).json({
                     erro: "Produto não encontrado"
@@ -54,6 +62,7 @@ export default async function handler(req, res) {
                 });
             }
 
+            // vamos buscar a quantidade antiga para depois calcular a diferença no log
             const anterior = await sql`SELECT quantidade FROM products WHERE id=${id}`;
 
             if (anterior.length === 0) {
@@ -68,6 +77,8 @@ export default async function handler(req, res) {
                 WHERE id=${id}
                 RETURNING *`;
 
+            // o log guarda a variação em vez do valor final, ex.: "Quantidade +5" ou "Quantidade -3"
+            // (o "+" tem de ser posto à mão, os negativos já trazem o "-")
             const diferenca = quantidade - anterior[0].quantidade;
             const acao = `Quantidade ${diferenca >= 0 ? "+" : ""}${diferenca}`;
 

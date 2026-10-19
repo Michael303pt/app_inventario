@@ -12,6 +12,7 @@ async function carregarLogs(){
         }
     });
 
+    //token expirado ou inválido, volta ao login
     if(resposta.status===401){
         logout();
         return;
@@ -25,6 +26,7 @@ async function carregarLogs(){
     }
 
     const dados = await resposta.json();
+    //se por alguma razão não vier uma lista, mostra a tabela vazia em vez de rebentar
     mostrar(Array.isArray(dados) ? dados : []);
 }
 
@@ -34,6 +36,7 @@ function mostrar(logs){
     tabela.innerHTML="";
 
     logs.forEach((log)=>{
+        //a BD manda a data em formato ISO, ou seja dd/mm/aaaa
         let data=new Date(log.Data).toLocaleDateString("pt-PT");
         tabela.innerHTML += `
         <tr>
